@@ -8,12 +8,13 @@ import org.lansrod.spark.etl.core.SparkSessionCreat
 
 
 
-class HiveInput(config: Configuration) extends SparkSessionCreat with InputBatch{
+class HiveInput(config: Configuration) extends InputBatch {
   private val sql: String = config.getOrException[String](HiveInputConfiguration.SQL)
-  import spark.implicits._
-  implicit val Rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
 
-  override def createDS[Row: Encoder](Ss: SparkSession):Dataset[Row]= {
+  override def createDS[Rowencoder : Encoder](Ss: SparkSession):Dataset[Row]= {
+    import Ss.implicits._
+    implicit val Rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
+
     try {
       val hiveContext = HiveFactory.getOrCreate(Ss.sparkContext)
       val df = hiveContext.sql(sql)
