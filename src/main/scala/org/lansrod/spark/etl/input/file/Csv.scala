@@ -5,11 +5,11 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{BytesWritable, Text}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Dataset, Encoder, Row, SQLContext, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SQLContext, SparkSession}
 import org.lansrod.spark.etl.input.InputBatch
 import org.lansrod.spark.etl.utils.ZipFileInputFormat
 
-class csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
+class Csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
 
   val ZipExtention = ".zip"
   val DefaultCharset = "UTF-8"
@@ -18,11 +18,11 @@ class csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
   private val charset = config.getOpt[String](FileConfiguration.CHARSET).getOrElse(DefaultCharset)
   private val folder = config.getOpt[String](FileConfiguration.FOLDER)
 
-  override def createDS[Rowencoder : Encoder](Ss: SparkSession): Dataset[Row] = {
+  override def createDS(Ss: SparkSession): Dataset[Row] = {
     print( "createDS: input file: " + file)
     try {
       import Ss.implicits._
-      implicit val Rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
+      implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
 
       ZipUtils.init(Ss.sparkContext)
       val csvFile = if (file.endsWith(ZipExtention)) ZipUtils.unzipAndGetPath(file) else Some(file)
@@ -38,7 +38,8 @@ class csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
               .option("delimiter", delimiter)
               .option("charset", charset)
               .load(csvFile.get)
-              .as(Rowencoder)
+              .as(rowencoder)
+      ds.show()
       ds
     } catch {
       case e: Exception =>
@@ -58,12 +59,12 @@ class csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
 
     def unzipAndGetPath(filePath: String): Option[String] = {
 
-      val zipFileRDD = sc.newAPIHadoopFile(
+      val zipFileRow = sc.newAPIHadoopFile(
         FileSystem.get(new Configuration()).getFileStatus(new Path(filePath)).getPath.toString,
         classOf[ZipFileInputFormat],
         classOf[Text],
         classOf[BytesWritable], sc.hadoopConfiguration)
-      val zipPath = zipFileRDD.map {
+      val zipPath = zipFileRow.map {
         y => ProcessFile(y._1.toString, y._2)
       }
       if (zipPath.isEmpty()) {
