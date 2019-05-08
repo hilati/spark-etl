@@ -1,4 +1,4 @@
-/*package org.lansrod.spark.etl.format
+package org.lansrod.spark.etl.format
 
 import java.util
 
@@ -11,7 +11,7 @@ import org.json4s.DefaultFormats
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
-class Json extends Format {
+/*class Json extends Format {
 
   override def decode(content: String, allowNullValue: Boolean = true): Any = {
     implicit val formats = DefaultFormats
