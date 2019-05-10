@@ -1,7 +1,5 @@
 package org.lansrod.spark.etl.input.hive
 
-import org.apache.logging.log4j.scala.Logging
-import org.apache.logging.log4j.Level
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.hive.HiveContext

@@ -7,18 +7,23 @@ val hbaseVersion = "3.0.0-SNAPSHOT"
 
 
 resolvers ++=Seq(
-  "Apache HBase" at "https://repository.apache.org/content/repositories/releases",
-  "Thrift" at "http://people.apache.org/~rawson/repo/",
-  "Cloudera repo" at "https://mvnrepository.com/artifact/org.apache.kafka/kafka",
-  "Snapshots" at "https://repository.apache.org/content/repositories/snapshots",
-  "Thrift" at "http://people.apache.org/~rawson/repo/",
-  "sbt" at "https://mvnrepository.com/artifact/org.scala-sbt/serialization",
-  "google" at "https://mvnrepository.com/artifact/",
-  "hbase-spark" at "https://mvnrepository.com/artifact/com.hortonworks",
-  "Hortonworks Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
-  "Jetty Releases" at "http://repo.hortonworks.com/content/repositories/jetty-hadoop/",
-  "Hadoop Releases" at "https://repository.cloudera.com/content/repositories/releases/",
-  "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
+  "apache-snapshots" at "http://repository.apache.org/snapshots/",
+  //"Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+  //"Sonatype OSS Releases" at "http://oss.sonatype.org/content/repositories/releases",
+  //"Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
+  //"Maven Central" at "https://repo1.maven.org/maven2/",
+  //"spark-streaming-kafka" at "https://mvnrepository.com/artifact/org.apache.spark/",
+  //"Snapshots" at "https://repository.apache.org/content/repositories/snapshots",
+ // "Hadoop Releases" at "https://repository.cloudera.com/content/repositories/releases/",
+//  "google" at "https://mvnrepository.com/artifact/",
+  //"Thrift" at "http://people.apache.org/~rawson/repo/",
+  //"Hortonworks Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
+  //"Jetty Releases" at "http://repo.hortonworks.com/content/repositories/jetty-hadoop/",
+  //"Apache HBase" at "https://repository.apache.org/content/repositories/releases",
+  //"sbt" at "https://mvnrepository.com/artifact/org.scala-sbt/serialization",
+  //"Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
+
+
 )
 
 
@@ -31,17 +36,23 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
   "org.apache.spark" %% "spark-streaming" % sparkVersion,
   "org.apache.spark" %% "spark-hive" % sparkVersion,
-  "org.apache.spark" % "spark-streaming-kafka_2.10" % "1.4.1",
   "org.apache.hbase" % "hbase-spark" % "3.0.0-SNAPSHOT",
+  "org.apache.spark" % "spark-streaming-kafka_2.10" % "1.4.1",
+  //"org.apache.spark" %% "spark-sql-kafka-0-10" % "2.4.2", probleme with google methode, exclude google guava is requierd 
+
 
 )
+
+
+
+
 
 //hbase module
 libraryDependencies ++= Seq(
   "org.apache.hbase" % "hbase-server" % "1.2.1",
   "org.apache.hbase" % "hbase-client" % "1.2.1",
   "org.apache.hbase" % "hbase-common" % "1.2.1",
- 
+
 )
 
 //libraryDependencies += "com.hortonworks" % "shc-core" % "1.1.1-2.1-s_2.11" % "provided"
@@ -57,7 +68,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.apache.hadoop" %  "hadoop-core"        % "0.20.2"      % "provided",
   "org.apache.hadoop" % "hadoop-common" % "2.7.3",
-  "org.apache.hadoop" %  "hadoop-client"   % "2.7.3"% "provided",
+  //"org.apache.hadoop" %  "hadoop-client"   % "2.7.3"% "provided",
 )
 
 libraryDependencies += "org.apache.hive"   %  "hive-exec"          % "0.8.1"       % "provided"
@@ -69,8 +80,8 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 libraryDependencies ++= Seq(
   "com.google.collections" % "google-collections" % "1.0-rc1",
   "com.google.firebase" % "firebase-admin" % "5.9.0",
-  "com.google.guava" % "guava" % "12.0",
-  
+  //"com.google.guava" % "guava" % "12.0",
+
 )
 
 /*

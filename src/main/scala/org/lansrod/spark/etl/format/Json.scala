@@ -2,7 +2,7 @@ package org.lansrod.spark.etl.format
 
 import java.util
 
-import net.liftweb.json._
+//import net.liftweb.json._
 import org.apache.hadoop.hbase.client.Result
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.spark.sql.Row
