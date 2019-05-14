@@ -6,7 +6,7 @@ import org.apache.spark.sql.{DataFrame, Row, SQLContext}
 import org.apache.spark.sql.datasources.hbase.HBaseTableCatalog
 import org.lansrod.spark.etl.Configuration
 import org.lansrod.spark.etl.input.Kafka.KafkaInput
-import project.output.kafka.KafkaOutput
+import org.lansrod.spark.etl.output.kafka.KafkaOutput
 //import org.apache.spark.sql.execution.datasources.hbase._
 
 import org.lansrod.spark.etl.input.file.Csv
@@ -25,15 +25,11 @@ object node extends SparkSessionCreat{
 
 
   def main(args: Array[String]): Unit = {
-    val kafka = new HiveInput(conf)
     implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
     var df =  Seq(
       ("010101010", "010101011110"),
       ("0101010", "01010101110"),
       ("01010110", "0101011110")
     ).toDF("key", "value")
-    df = kafka.createDS(spark)
-    df.show()
-
   }
 }
