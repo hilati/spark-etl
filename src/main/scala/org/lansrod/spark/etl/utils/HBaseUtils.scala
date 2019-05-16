@@ -79,110 +79,18 @@ object HBaseUtils {
     }
     val sqlContext = dataset.sqlContext
     import sqlContext.implicits._
+    implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
+
     val rowKey = Bytes.toStringBinary(binaryRowkey.get())
     for (cell: Cell <- result.listCells()) {
       val family = Bytes.toString(cell.getFamilyArray, cell.getFamilyOffset, cell.getFamilyLength)
       val key = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
       val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
-      dataset.union(sqlContext.createDataset(Seq(rowKey,family,key,value)).toDF("id","family","key","value"))
+      val timestamp= cell.getTimestamp()
+      dataset.union(sqlContext.createDataset(Seq(rowKey,family,key,value,timestamp)).toDF("id","family","key","value","version"))
     }
     dataset
   }
 
-  /*
-    def generateDatanodeFromHbaseTuple(hbaseTuple: (ImmutableBytesWritable, Result), format: Json, allowNullValue: Boolean): DataNode = {
 
-      val binaryRowkey = hbaseTuple._1
-      val result = hbaseTuple._2
-      if(result.isEmpty){
-        throw new TechnicalNonBlockingException("La donnée Hbase ne peut pas être parser en Datanode car elle est vide")
-      }
-      val dataNode = DataNodeFactoryWrapper.newNode()
-      val rowKey = Bytes.toStringBinary(binaryRowkey.get())
-      dataNode.setValue("id", rowKey)
-      val hbaseDataNode = dataNode.newNode()
-      dataNode.setValue("data", hbaseDataNode)
-      for (cell: Cell <- result.listCells()) {
-        val family = Bytes.toString(cell.getFamilyArray, cell.getFamilyOffset, cell.getFamilyLength)
-        val key = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
-        val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
-
-        try {
-          hbaseDataNode.newOrGetNode(family).put(key, format.decode(value, allowNullValue))
-        } catch {
-          case e: Exception =>
-            throw new TechnicalNonBlockingException(s"Impossible de parser la donnée $rowKey - $family:$key = $value", e)
-        }
-      }
-      dataNode
-    }
-
-    /**
-      * Convert a result to a datanode. Return null if the result is empty
-      * @param result - the result
-      * @param format - the json format
-      * @return a datanode or null if result is empty
-      */
-    def generateRowFromResult(result:Result, format: Json): Row = {
-      if (result != null && !result.isEmpty) {
-        val row = Row()
-        val rowKey = Bytes.toString(result.getRow)
-        dataNode.setValue("id", rowKey)
-        val hbaseDataNode = dataNode.newNode()
-        dataNode.setValue("data", hbaseDataNode)
-        for (cell <- result.listCells()) {
-          val family = Bytes.toString(cell.getFamilyArray, cell.getFamilyOffset, cell.getFamilyLength)
-          val key = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
-          val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
-          try {
-            hbaseDataNode.newOrGetNode(family).put(key, format.decode(value, false))
-          } catch {
-            case e: Exception =>
-              throw new TechnicalNonBlockingException(s"Impossible de parser la donnée $rowKey - $family:$key = $value", e)
-          }
-        }
-        dataNode
-      }
-      else {
-        null
-      }
-    }
-
-    def filterHbaseRecordCellsByTimestamp(hbaseRDD: RDD[(ImmutableBytesWritable, Result)], timestamp: Long): RDD[Option[(ImmutableBytesWritable, Result)]] = {
-      hbaseRDD.map({ case (row, result) =>
-        val cellList: List[Cell] = result.listCells().filter(cell => timestamp.equals(cell.getTimestamp)).toList
-        if (cellList.nonEmpty) {
-          val record = (row, Result.create(cellList))
-          Option(record)
-        }
-        else {
-          None
-        }
-      })
-    }
-
-    def generateGet(rowKey: String, families: Option[String], prefixes: Option[String], timestamp: Option[Long]): Get = {
-      val get = new Get(Bytes.toBytes(rowKey))
-      get.setCacheBlocks(false)
-      families match {
-        case Some(fams) if fams.nonEmpty =>
-          val listFamilies = fams.split(",").toList
-          listFamilies.foreach(fam => get.addFamily(Bytes.toBytes(fam)))
-        case _ => get.addFamily(Bytes.toBytes("d"))
-      }
-      prefixes match {
-        case Some(prefs) if prefs.nonEmpty =>
-          val arrayPrefixes = prefs.split(",")
-          val bytesPrefixesArray = arrayPrefixes.map(pref => Bytes.toBytes(pref))
-          val filter = new MultipleColumnPrefixFilter(bytesPrefixesArray)
-          get.setFilter(filter)
-        case _ => ()
-      }
-      timestamp match {
-        case Some(ts) => get.setTimeStamp(ts)
-        case _ => ()
-      }
-      get
-    }
-  */
 }
