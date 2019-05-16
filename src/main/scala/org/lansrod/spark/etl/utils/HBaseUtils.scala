@@ -87,10 +87,10 @@ object HBaseUtils {
       val key = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
       val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
       val timestamp= cell.getTimestamp()
-      dataset.union(sqlContext.createDataset(Seq(rowKey,family,key,value,timestamp)).toDF("id","family","key","value","version"))
+      case class row(id : String,family: String,key : String,value : String,version : Long)
+      val tmpdataset = Seq(Row(rowKey,family,key,value,timestamp)).toDF("id","family","key","value","version")
+      dataset.union(tmpdataset)
     }
     dataset
   }
-
-
 }
