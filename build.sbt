@@ -8,6 +8,8 @@ val hbaseVersion = "3.0.0-SNAPSHOT"
 
 resolvers ++=Seq(
   "apache-snapshots" at "http://repository.apache.org/snapshots/",
+//  "Conjars" at "http://conjars.org/repo",
+  //"cljars" at "https://clojars.org/repo/",
   //"Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
   //"Sonatype OSS Releases" at "http://oss.sonatype.org/content/repositories/releases",
   //"Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
@@ -23,7 +25,13 @@ resolvers ++=Seq(
   //"sbt" at "https://mvnrepository.com/artifact/org.scala-sbt/serialization",
   //"Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
 
-
+  //"Spray Repository" at "http://repo.spray.cc/",
+  //"Akka Repository" at "http://repo.akka.io/releases/",
+ // "Twitter4J Repository" at "http://twitter4j.org/maven2/",
+ //"Twitter Maven Repo" at "http://maven.twttr.com/",
+  //"scala-tools" at "https://oss.sonatype.org/content/groups/scala-tools",
+ // "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+  //"Second Typesafe repo" at "http://repo.typesafe.com/typesafe/maven-releases/"
 )
 
 
@@ -38,10 +46,13 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-hive" % sparkVersion,
   "org.apache.hbase" % "hbase-spark" % "3.0.0-SNAPSHOT",
   "org.apache.spark" % "spark-streaming-kafka_2.10" % "1.4.1",
-  //"org.apache.spark" %% "spark-sql-kafka-0-10" % "2.4.2", probleme with google methode, exclude google guava is requierd 
+  "org.elasticsearch" 		% "elasticsearch"           % "1.7.6",
+  //"org.apache.spark" %% "spark-sql-kafka-0-10" % "2.4.2",// probleme with google methode, exclude google guava is requierd
 
 
 )
+
+libraryDependencies += "org.elasticsearch" % "elasticsearch-spark-20_2.10" % "6.2.2"
 
 
 
@@ -79,13 +90,19 @@ libraryDependencies += "org.apache.hive"   %  "hive-exec"          % "0.8.1"    
 libraryDependencies += "net.liftweb"       %% "lift-webkit" % "3.3.0" % "compile"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 //Google module
-libraryDependencies ++= Seq(
+dependencyOverrides ++= Seq(
   "com.google.collections" % "google-collections" % "1.0-rc1",
   "com.google.firebase" % "firebase-admin" % "5.9.0",
-  //"com.google.guava" % "guava" % "12.0",
+  "com.google.guava" % "guava" % "12.0",
 
 )
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-core" % "2.8.8"
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.8"
+dependencyOverrides += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.8"
 
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 /*
 
 // spark modules
