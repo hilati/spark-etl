@@ -3,8 +3,9 @@ package org.lansrod.spark.etl.core
 import org.apache.spark.sql.{DataFrame, Row, SQLContext}
 import org.lansrod.spark.etl.Configuration
 import org.lansrod.spark.etl.output.elasticsearch.ElasticsearchOutput
+import org.lansrod.spark.etl.output.oracle.OracleOutput
 object node extends SparkSessionCreat{
-  val conf = Configuration.create(Map("index" -> "spark/test","hostname"->"localhost","port"-> "9200"))
+  val conf = Configuration.create(Map("user" -> "spark","url"->"localhost","table"-> "test","salt"->"hilatihilatihila","password"->"","schema"->""))
 
   import org.apache.hadoop.hbase.client.HBaseAdmin
   import org.apache.hadoop.hbase.client.HTable
@@ -18,7 +19,7 @@ object node extends SparkSessionCreat{
 
   def main(args: Array[String]): Unit = {
     implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
-    val el = new ElasticsearchOutput(conf)
+    val el = new OracleOutput(conf)
     var df =  Seq(
       (9,9)
     ).toDF("hwael")
