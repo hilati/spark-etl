@@ -1,41 +1,10 @@
 name := "spark-etl"
 version := "0.1"
 scalaVersion := "2.12.8"
+
 val sparkVersion = "2.4.2"
 val kafkaVersion = "2.1.0"
 val hbaseVersion = "3.0.0-SNAPSHOT"
-
-
-resolvers ++=Seq(
-  "apache-snapshots" at "http://repository.apache.org/snapshots/",
-//  "Conjars" at "http://conjars.org/repo",
-  //"cljars" at "https://clojars.org/repo/",
-  //"Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-  //"Sonatype OSS Releases" at "http://oss.sonatype.org/content/repositories/releases",
-  //"Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
-  //"Maven Central" at "https://repo1.maven.org/maven2/",
-  //"spark-streaming-kafka" at "https://mvnrepository.com/artifact/org.apache.spark/",
-  //"Snapshots" at "https://repository.apache.org/content/repositories/snapshots",
- // "Hadoop Releases" at "https://repository.cloudera.com/content/repositories/releases/",
-//  "google" at "https://mvnrepository.com/artifact/",
-  //"Thrift" at "http://people.apache.org/~rawson/repo/",
-  //"Hortonworks Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
-  //"Jetty Releases" at "http://repo.hortonworks.com/content/repositories/jetty-hadoop/",
-  //"Apache HBase" at "https://repository.apache.org/content/repositories/releases",
-  //"sbt" at "https://mvnrepository.com/artifact/org.scala-sbt/serialization",
-  //"Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
-
-  //"Spray Repository" at "http://repo.spray.cc/",
-  //"Akka Repository" at "http://repo.akka.io/releases/",
- // "Twitter4J Repository" at "http://twitter4j.org/maven2/",
- //"Twitter Maven Repo" at "http://maven.twttr.com/",
-  //"scala-tools" at "https://oss.sonatype.org/content/groups/scala-tools",
- // "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-  //"Second Typesafe repo" at "http://repo.typesafe.com/typesafe/maven-releases/"
-)
-
-
-
 
 // spark modules
 libraryDependencies ++= Seq(
@@ -48,22 +17,15 @@ libraryDependencies ++= Seq(
   "org.apache.spark" % "spark-streaming-kafka_2.10" % "1.4.1",
   "org.elasticsearch" 		% "elasticsearch"           % "1.7.6",
   //"org.apache.spark" %% "spark-sql-kafka-0-10" % "2.4.2",// probleme with google methode, exclude google guava is requierd
-
-
 )
 
 libraryDependencies += "org.elasticsearch" % "elasticsearch-spark-20_2.10" % "6.2.2"
-
-
-
-
 
 //hbase module
 libraryDependencies ++= Seq(
   "org.apache.hbase" % "hbase-server" % "1.2.1",
   "org.apache.hbase" % "hbase-client" % "1.2.1",
   "org.apache.hbase" % "hbase-common" % "1.2.1",
-
 )
 
 //libraryDependencies += "com.hortonworks" % "shc-core" % "1.1.1-2.1-s_2.11" % "provided"
@@ -94,7 +56,6 @@ dependencyOverrides ++= Seq(
   "com.google.collections" % "google-collections" % "1.0-rc1",
   "com.google.firebase" % "firebase-admin" % "5.9.0",
   "com.google.guava" % "guava" % "12.0",
-
 )
 dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-core" % "2.8.8"
 dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.8"
@@ -103,6 +64,13 @@ dependencyOverrides += "com.fasterxml.jackson.module" %% "jackson-module-scala" 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+
+lazy val excludeJpountz = ExclusionRule(organization = "net.jpountz.lz4", name = "lz4")
+excludeDependencies ++= Seq(
+  // commons-logging is replaced by jcl-over-slf4j
+  ExclusionRule("commons-logging", "commons-logging"),
+  excludeJpountz
+)
 /*
 
 // spark modules
