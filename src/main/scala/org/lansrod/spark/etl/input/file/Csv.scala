@@ -5,7 +5,8 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{BytesWritable, Text}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Dataset, Row, SQLContext, SparkSession}
+import org.apache.spark.sql.{Dataset, Encoders, Row, SQLContext, SparkSession}
+import org.lansrod.spark.etl.core.{GenericEncoders, GenericType}
 import org.lansrod.spark.etl.input.InputBatch
 import org.lansrod.spark.etl.utils.ZipFileInputFormat
 
@@ -18,28 +19,30 @@ class Csv(config: org.lansrod.spark.etl.Configuration) extends InputBatch {
   private val charset = config.getOpt[String](FileConfiguration.CHARSET).getOrElse(DefaultCharset)
   private val folder = config.getOpt[String](FileConfiguration.FOLDER)
 
-  override def createDS(Ss: SparkSession): Dataset[Row] = {
+  override def createDS(Ss: SparkSession): Dataset[GenericType] = {
     print( "createDS: input file: " + file)
     try {
       import Ss.implicits._
-      implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
 
       ZipUtils.init(Ss.sparkContext)
       val csvFile = if (file.endsWith(ZipExtention)) ZipUtils.unzipAndGetPath(file) else Some(file)
-      if (csvFile.isEmpty)
-        return Ss.emptyDataset
+      if (csvFile.isEmpty) {
+        return Ss.emptyDataset[GenericType]
+      }
       print( "csvFile: " + csvFile)
+      implicit val GenericEncoder = Encoders.product[GenericType]
 
       val sQLContext = new SQLContext(Ss.sparkContext)
-      val ds = sQLContext.read
+      val df = sQLContext.read
               .format("com.databricks.spark.csv")
               .option("header", "true")
               .option("parserLib", "univocity")
               .option("delimiter", delimiter)
               .option("charset", charset)
+              .option("inferSchema", "true")
               .load(csvFile.get)
-              .as(rowencoder)
-      ds.show()
+
+      val ds = df.as(GenericEncoder)
       ds
     } catch {
       case e: Exception =>

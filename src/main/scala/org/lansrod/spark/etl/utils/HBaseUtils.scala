@@ -1,7 +1,7 @@
 package org.lansrod.spark.etl.utils
 
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hbase.client.{ Result, Scan}
+import org.apache.hadoop.hbase.client.{Result, Scan}
 import org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat
@@ -10,7 +10,8 @@ import org.apache.hadoop.hbase.util.{Base64, Bytes}
 import org.apache.hadoop.hbase.{Cell, HBaseConfiguration, HConstants}
 
 import scala.collection.JavaConversions._
-import org.apache.spark.sql.{Dataset, Row}
+import org.apache.spark.sql.{Dataset, Encoders, Row}
+import org.lansrod.spark.etl.core.GenericType
 object HBaseUtils {
 
 
@@ -19,9 +20,9 @@ object HBaseUtils {
     val config: Configuration = HBaseConfiguration.create()
     config.set("hbase.client.scanner.timeout.period", "900000")
     config.set(TableInputFormat.INPUT_TABLE, tableName)
-    val scan = new Scan()
-    scan.setCacheBlocks(false)
-
+   // val scan = new Scan()
+    //scan.setCacheBlocks(false)
+/*
     startrow match {
       case Some(startRow) if startRow.nonEmpty => scan.setStartRow(Bytes.toBytes(startRow))
       case _ => ()
@@ -44,7 +45,7 @@ object HBaseUtils {
       case Some(ts) => scan.setTimeStamp(ts)
       case _ => ()
     }
-    config.set(TableInputFormat.SCAN, convertScanToString(scan))
+    config.set(TableInputFormat.SCAN, convertScanToString(scan))*/
     config
   }
 
@@ -64,13 +65,13 @@ object HBaseUtils {
     hbaseConf.setLong(HConstants.HBASE_CLIENT_PAUSE, HConstants.DEFAULT_HBASE_CLIENT_PAUSE)
     hbaseConf
   }
-
+/*
   def convertScanToString(scan: Scan): String = {
     val proto = ProtobufUtil.toScan(scan)
     Base64.encodeBytes(proto.toByteArray)
   }
-
-  def generateDatasetFromHbaseTuple(hbaseTuple: (ImmutableBytesWritable, Result), dataset: Dataset[Row], allowNullValue: Boolean): Dataset[Row] = {
+*/
+  def generateDatasetFromHbaseTuple(hbaseTuple: (ImmutableBytesWritable, Result), dataset: Dataset[GenericType], allowNullValue: Boolean): Dataset[GenericType] = {
     val binaryRowkey = hbaseTuple._1
     val result = hbaseTuple._2
     if(result.isEmpty){
@@ -78,8 +79,8 @@ object HBaseUtils {
       return null
     }
     val sqlContext = dataset.sqlContext
-    import sqlContext.implicits._
-    implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
+    import sqlContext.sparkSession.implicits._
+    implicit val GenericEncoder = Encoders.product[GenericType]
 
     val rowKey = Bytes.toStringBinary(binaryRowkey.get())
     for (cell: Cell <- result.listCells()) {
@@ -88,7 +89,7 @@ object HBaseUtils {
       val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
       val timestamp= cell.getTimestamp()
       case class row(id : String,family: String,key : String,value : String,version : Long)
-      val tmpdataset = Seq(Row(rowKey,family,key,value,timestamp)).toDF("id","family","key","value","version")
+      val tmpdataset = Seq(GenericType(rowKey,family,key,value,timestamp)).toDS()
       dataset.union(tmpdataset)
     }
     dataset

@@ -5,8 +5,9 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.spark.rdd.RDD
 import org.lansrod.spark.etl.utils.HBaseUtils
-import org.apache.spark.sql.{Dataset, Row, SQLContext, SparkSession}
+import org.apache.spark.sql.{Dataset, Encoders, Row, SQLContext, SparkSession}
 import org.lansrod.spark.etl.Configuration
+import org.lansrod.spark.etl.core.GenericType
 import org.lansrod.spark.etl.input.InputBatch
 
 
@@ -23,9 +24,11 @@ class HBaseInput(config: Configuration) extends InputBatch {
   }
 
 
-  override def createDS(Ss: SparkSession): Dataset[Row]= {
+  override def createDS(Ss: SparkSession): Dataset[GenericType]= {
     implicit val rowencoder = org.apache.spark.sql.Encoders.kryo[Row]
-    val dataset = Ss.emptyDataset[Row]
+    implicit val GenericEncoder = Encoders.product[GenericType]
+    val dataset = Ss.emptyDataset[GenericType]
+
     try {
           val conf: org.apache.hadoop.conf.Configuration = HBaseUtils.generateConfig(tableName, startrow, families, prefixes, timestamp)
           val hBaseRDD: RDD[(ImmutableBytesWritable, Result)] = Ss.sparkContext.newAPIHadoopRDD(conf, classOf[TableInputFormat],

@@ -4,11 +4,12 @@ package org.lansrod.spark.etl.input.Kafka
 import kafka.api.OffsetRequest
 import kafka.serializer.StringDecoder
 import org.apache.avro.data.Json
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Encoders, Row, SparkSession}
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.lansrod.spark.etl.Configuration
+import org.lansrod.spark.etl.core.GenericType
 import org.lansrod.spark.etl.format.Format
 import org.lansrod.spark.etl.input.InputBatch
 
@@ -69,32 +70,47 @@ class KafkaInput(config:Configuration) extends InputBatch {
 	}
 */
 
-	def createStream(Ss : SparkSession) : Dataset[Row] = {
+	def createStream(Ss : SparkSession) : Dataset[GenericType] = {
 		try {
+			//must check by fahd
+
+			import Ss.implicits._
+			implicit val GenericEncoder = Encoders.product[GenericType]
 			var df = Ss
 			.readStream
 			.format ("kafka")
 			.option ("kafka.bootstrap.servers", broker)
 			.option ("subscribe", topic)
-			.option ("startingOffsets", OffsetRequest.EarliestTime)
 			.load ()
-			df
+
+			val consoleOutput1 = df.writeStream
+				.outputMode("update")
+				.format("console")
+				.start()
+
+			Ss.streams.awaitAnyTermination()
+
+			val ds = df.as(GenericEncoder)
+			ds
 		} catch {
 		case e: Exception =>
 		print ("kafka", e)
 		throw e
 		}
 	}
-	override def createDS(Ss: SparkSession): Dataset[Row] = {
+	override def createDS(Ss: SparkSession): Dataset[GenericType] = {
 		try {
+			implicit val GenericEncoder = Encoders.product[GenericType]
 			val df = Ss
 			.read
 			.format("kafka")
 			.option("kafka.bootstrap.servers", broker)
 			.option("subscribe", topic)
-			.option("startingOffsets",  OffsetRequest.EarliestTime)
+			.option("startingOffsets", "earliest")
+			.option("endingOffsets", "latest")
 			.load()
-			df
+			val ds = df.as(GenericEncoder)
+			ds
 		} catch {
 			case e: Exception =>
 				print("kafka", e)
