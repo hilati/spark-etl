@@ -1,0 +1,24 @@
+1) Definir architecture Fonctionelle projet
+
+Action Fahd >> ecrire une ebauche d'architecture technico-fonctionelle
+
+
+2) Socle Technique
+
+Action Fahd >>  Structure Generic Encoders + Explain
+Action Fahd >>  Comment utiliser les Encodes dans les Input/output/Transfo + Explain
+Action Fahd >>  Structue Workflow + Explain
+
+3) Preparer Environnement Dev
+	a) SBT
+	b) Scalatest
+
+Action Fahd> ecrire un Readme explicant la configuration/setup de l'environnement
+
+
+Servers Configuration (depend de commande serveurs) 
+
+build and deploy env once Servers Up
+
+Tests unitaires
+
