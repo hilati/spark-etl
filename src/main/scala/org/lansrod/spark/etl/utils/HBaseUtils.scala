@@ -88,7 +88,7 @@ object HBaseUtils {
       val key = Bytes.toString(cell.getQualifierArray, cell.getQualifierOffset, cell.getQualifierLength)
       val value = Bytes.toString(cell.getValueArray, cell.getValueOffset, cell.getValueLength)
       val timestamp= cell.getTimestamp()
-      case class row(id : String,family: String,key : String,value : String,version : Long)
+      //case class row(id : String,family: String,key : String,value : String,version : Long)
       val tmpdataset = Seq(GenericType(rowKey,family,key,value,timestamp)).toDS()
       dataset.union(tmpdataset)
     }

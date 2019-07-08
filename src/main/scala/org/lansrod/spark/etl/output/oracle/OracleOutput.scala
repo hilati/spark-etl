@@ -3,9 +3,10 @@ package org.lansrod.spark.etl.output.oracle
 import java.util.Properties
 
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{ Dataset, Row, SQLContext, SaveMode}
+import org.apache.spark.sql.{Dataset, Row, SQLContext, SaveMode}
 import org.apache.spark.{SparkContext, SparkEnv}
 import org.lansrod.spark.etl.Configuration
+import org.lansrod.spark.etl.core.GenericType
 import org.lansrod.spark.etl.output.OutputBatch
 import org.lansrod.spark.etl.utils.{File, Security}
 import org.slf4j.LoggerFactory
@@ -33,7 +34,7 @@ class OracleOutput(config: Configuration) extends OutputBatch {
       case _ => config.getOrException[String](OracleOutputConfiguration.SALT)
     }
   }
-  private val password = Security.uncryptWithPadding(config.getOrException[String](OracleOutputConfiguration.PASSWORD), salt)
+  private val password = "iiii"//Security.uncryptWithPadding(config.getOrException[String](OracleOutputConfiguration.PASSWORD), salt)
   /** Initialising the properties object used by jdbc **/
   private val connectionProperties = new Properties
   connectionProperties.setProperty("user", user)
@@ -58,7 +59,7 @@ class OracleOutput(config: Configuration) extends OutputBatch {
   val structType : StructType =  loadSchema()
 
 
-  override def saveDS(dataset: Dataset[Row]): Unit = {
+  override def saveDS(dataset: Dataset[GenericType]): Unit = {
     /** Initialising sql context **/
     val sc : SparkContext = dataset.sparkSession.sparkContext
     val sqlContext : SQLContext = new SQLContext(sc)

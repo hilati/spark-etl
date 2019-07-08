@@ -11,6 +11,7 @@ import org.elasticsearch.spark.rdd.EsSpark
 import org.lansrod.spark.etl.Configuration
 import org.lansrod.spark.etl.output.OutputBatch
 import org.elasticsearch.spark.sql._
+import org.lansrod.spark.etl.core.GenericType
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -26,7 +27,7 @@ class ElasticsearchOutput(config: Configuration) extends OutputBatch {
   )
 
 
-  override def saveDS(dataset: Dataset[Row]): Unit = {
+  override def saveDS(dataset: Dataset[GenericType]): Unit = {
     try {
       dataset.saveToEs(index)
     } catch {

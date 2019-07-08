@@ -1,6 +1,7 @@
 name := "spark-etl"
 version := "0.1"
 scalaVersion := "2.12.8"
+
 val sparkVersion = "2.4.2"
 val kafkaVersion = "2.1.0"
 val hbaseVersion = "3.0.0-SNAPSHOT"
@@ -39,7 +40,7 @@ resolvers ++=Seq(
 
 // spark modules
 libraryDependencies ++= Seq(
-  //"org.apache.spark" %% "spark-core" % sparkVersion,
+  "org.apache.spark" %% "spark-core" % sparkVersion,
   "org.apache.spark" %% "spark-sql" % sparkVersion,
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
   "org.apache.spark" %% "spark-streaming" % sparkVersion,
@@ -55,13 +56,13 @@ libraryDependencies ++= Seq(
 
 //hbase module
 libraryDependencies ++= Seq(
+  "org.apache.hbase" % "hbase" % "2.2.0",
   "org.apache.hbase" % "hbase-server" % "1.2.1",
   "org.apache.hbase" % "hbase-client" % "1.2.1",
   "org.apache.hbase" % "hbase-common" % "1.2.1",
-
 )
 
-//libraryDependencies += "com.hortonworks" % "shc-core" % "1.1.1-2.1-s_2.11" % "provided"
+//libraryDependencies += "com.hortonworks" %% "shc-core" % "1.0.1-1.6-s_2.10" //% "provided"
 
 libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-api" % "2.8.2",
@@ -69,6 +70,8 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-api-scala_2.12" % "11.0",
   "org.apache.logging.log4j" % "log4j-scala" % "11.0",
 )
+
+libraryDependencies += "org.apache.yetus" % "audience-annotations" % "0.10.0"
 
 //hadoop module
 libraryDependencies ++= Seq(

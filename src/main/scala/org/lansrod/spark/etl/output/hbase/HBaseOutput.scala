@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.{HBaseConfiguration, TableName}
 import org.apache.hadoop.mapreduce.Job
 import org.apache.spark.sql.{Dataset, Row}
 import org.lansrod.spark.etl.Configuration
+import org.lansrod.spark.etl.core.GenericType
 import org.lansrod.spark.etl.output.OutputBatch
 import org.lansrod.spark.etl.utils.HBaseUtils
 
@@ -25,10 +26,10 @@ class HBaseOutput(config: Configuration) extends OutputBatch {
 
 
 
-  override def saveDS(dataset: Dataset[Row]) : Unit = {
+  override def saveDS(dataset: Dataset[GenericType]) : Unit = {
     try {
       import dataset.sparkSession.implicits._
-      dataset.map(convert).rdd.foreachPartition(saveStream)
+      dataset.toDF().map(convert).rdd.foreachPartition(saveStream)
     } catch {
       case e: Exception =>
         print("hbase output", e)

@@ -8,6 +8,7 @@ import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.mapreduce.Job
 import org.apache.spark.sql.{Dataset, Row}
 import org.lansrod.spark.etl.Configuration
+import org.lansrod.spark.etl.core.GenericType
 import org.lansrod.spark.etl.output.OutputBatch
 
 
@@ -15,10 +16,10 @@ class HBaseDeleteOutput(config: Configuration) extends OutputBatch {
 
   private val table = config.getOrException[String](HBaseOutputConfiguration.TABLE)
 
-  override def saveDS(dataset: Dataset[Row]): Unit = {
+  override def saveDS(dataset: Dataset[GenericType]): Unit = {
     import dataset.sparkSession.implicits._
     try {
-      dataset.map(u =>convert(u)).rdd.saveAsNewAPIHadoopDataset(getJobConfiguration)
+      dataset.toDF().map(u =>convert(u)).rdd.saveAsNewAPIHadoopDataset(getJobConfiguration)
     } catch {
       case e: Exception =>
         print("HBASE output", e)
